@@ -1,0 +1,38 @@
+# Example configuration for dataloader profiling
+profile_dataloader_with_composer: true
+
+# Profiling settings
+data_local: data/NACHOS
+dataloader_profile_iterations: 40  # Number of batches to profile
+run_name: "dataloader_benchmark"
+
+tokenizer_name: ./ModernBERT-base
+
+# Batch size settings
+global_train_batch_size: 256
+device_train_microbatch_size: 64
+
+# Dataloader settings to profile
+train_loader:
+  name: text
+  dataset:
+    remote: # If blank, files must be present in data_local
+    local: ${data_local}
+    split: train
+    tokenizer_name: ./ModernBERT-base
+    max_seq_len: 1024
+    shuffle: true
+    mlm_probability: 0.3
+    streaming: false 
+  sequence_packing: true 
+  num_workers: 8  # Full worker count when using Composer profiling
+  prefetch_factor: 2
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+
+progress_bar: false
+
+# Other required settings (minimal)
+seed: 42
+precision: amp_bf16

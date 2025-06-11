@@ -1,0 +1,110 @@
+# Use this YAML to verify that MLM pre-training works. Runs on CPU or GPUs (if available).
+# From `examples/bert`, run:
+#   `composer main.py yamls/test/main.yaml` to run using the HuggingFace BERT
+#   `composer main.py yamls/test/main.yaml model.name=mosaic_bert` to run using the Mosaic BERT
+
+data_remote: # If blank, files must be present in data_local
+data_local: ./data
+tokenizer_name: ./ModernBERT-base # Path to the tokenizer and weights directory
+max_seq_len: 128
+mlm_probability: 0.3
+
+# Run Name
+run_name: test
+
+# Model
+model:
+  name: modernBERT
+  use_pretrained: true # Train the model from scratch. Set to true to start from the HF off-the-shelf weights.
+  pretrained_model_name: ${tokenizer_name}
+  tokenizer_name: ${tokenizer_name}
+  gradient_checkpointing: true # Enable gradient checkpointing to reduce memory usage
+
+# Dataloaders
+train_loader:
+  name: text
+  dataset:
+    remote: ${data_remote}
+    local: ${data_local}
+    split: NACHOS
+    tokenizer_name: ${tokenizer_name}
+    max_seq_len: ${max_seq_len}
+    shuffle: true
+    mlm_probability: ${mlm_probability}
+    streaming: false 
+  sequence_packing: true 
+  drop_last: true
+  num_workers: 8
+
+eval_loader:
+  name: text
+  dataset:
+    remote: ${data_remote}
+    local: ${data_local}
+    split: NACHOS
+    tokenizer_name: ${tokenizer_name}
+    max_seq_len: ${max_seq_len}
+    predownload: 1000
+    shuffle: false
+    mlm_probability: ${mlm_probability}
+    streaming: false
+  drop_last: false
+  num_workers: 8
+
+# Optimization
+scheduler:
+  name: linear_decay_with_warmup
+  t_warmup: 0.5dur # Warmup to the full LR for 6% of the training duration
+  alpha_f: 0.02 # Linearly decay to 0.02x the full LR by the end of the training duration
+
+optimizer:
+  name: stableadamw
+  lr: 2.0e-5
+  betas:
+  - 0.9
+  - 0.98
+  eps: 1.0e-08
+  weight_decay: 0.0
+
+# Training duration and evaluation frequency
+max_duration: 10ba
+eval_interval: 5ba
+eval_subset_num_batches: 5 
+global_train_batch_size: 8
+
+# System
+seed: 17
+device_eval_batch_size: 16
+device_train_microbatch_size: 4
+precision: fp32
+
+# Logging
+progress_bar: false
+log_to_console: true
+console_log_interval: 1ba
+loggers:
+  tensorboard:
+    log_dir: ./logs
+    flush_interval: 5
+profiler: true
+  # mlflow:
+  #   experiment_name: doctoBERT-test
+  #   tracking_uri: ./mlruns
+  #   run_name: ${run_name}
+  #   auto_log: true
+  #   log_model: true
+  #   log_dataset: true
+  #   log_optimizer: true
+  #   log_scheduler: true
+
+callbacks:
+  speed_monitor:
+    window_size: 5
+  lr_monitor: {}
+
+# (Optional) Checkpoint to local filesystem or remote object store
+autoresume: true
+save_interval: 5ba
+save_num_checkpoints_to_keep: 2  # Important, this cleans up checkpoints saved to DISK
+save_folder: ./runs/${run_name}/ckpt     # e.g. './{run_name}/ckpt' (local) or 's3://mybucket/mydir/{run_name}/ckpt' (remote)
+save_overwrite: true  # Overwrite existing checkpoints
