@@ -1,0 +1,65 @@
+Below is a proposed rubric to evaluate the quality of health-related content on
+web pages. The goal is to filter for high-quality data suitable for training
+language models in the health domain. Points are accumulated based on the
+satisfaction of each criterion:
+
+- Add 1 point if the extract provides some basic health information or factual
+  content relevant to medical/health topics, even if it includes irrelevant,
+  promotional, or low-quality elements. At this level, the text at least touches
+  on a health-related subject or fact, but it may be mixed with unrelated
+  content, advertisements, or superficial commentary.
+
+- Add another point if the extract addresses health topics with some useful
+  detail but does not closely adhere to medical standards or evidence-based
+  guidance. It might mix accurate information with questionable or unverified
+  claims, or present a superficial overview of the topic. The writing could be
+  disorganized or unclear, possibly containing promotional tone or bias, which
+  limits its reliability or depth.
+
+- Award a third point if the extract is generally appropriate as a health
+  information source, introducing key medical concepts, guidance, or facts that
+  are mostly accurate and coherent. The content is informative and structured
+  well enough to be useful for learning or reference. It may resemble a basic
+  patient education article, a case summary, or an introductory section on the
+  topic. However, it may not be comprehensive and could include minor extraneous
+  information or limitations – for example, it might omit some details or use
+  technical terms without explanation, indicating that it’s helpful but not
+  perfect.
+
+- Grant a fourth point if the extract is highly relevant and valuable as a
+  medical content resource, with clear, consistent writing and evidence-based
+  information. The text offers substantial detail or guidance (comparable to a
+  section of a medical textbook, a clinical guideline, or a high-quality
+  review), and it aligns well with current medical knowledge or standard
+  practice. It contains minimal irrelevant or biased content, demonstrating
+  reliability and focus. The information is thorough enough to be very
+  informative and trustworthy for its intended audience (whether healthcare
+  professionals or patients) without containing significant errors or misleading
+  statements.
+
+- Bestow a fifth point if the extract is outstanding in quality, representing an
+  exemplary medical information source. It provides comprehensive,
+  authoritative, and impeccably accurate coverage of the topic, reflecting
+  current scientific consensus or official guidelines. The writing is
+  well-organized and easy to follow, offering deep insights and thorough
+  explanations without any misinformation, undue bias, or extraneous fluff. This
+  level of content is exceptionally clear and informative, on par with the best
+  medical literature or educational resources, making it extremely valuable for
+  knowledge acquisition and model training.
+
+After examining the extract:
+
+- Briefly justify your evaluation of each criterion by citing specific aspects of the text. This reasoning should be concise, under 100 words.
+- For each criterion, output a boolean value (true or false) indicating if the text satisfies it.
+- Provide an overall quality score as an integer from 0 to 5.
+- Output in the following JSON format only (no extra text):
+
+{
+  "reasoning": "<Your justification, under 100 words, covering why each criterion is true/false>",
+  "criterion_basic_health_info": true/false,
+  "criterion_some_useful_detail": true/false,
+  "criterion_general_accuracy_and_coherence": true/false,
+  "criterion_high_relevance_and_evidence_based": true/false,
+  "criterion_outstanding_authoritative": true/false,
+  "final_score": <0-5 integer>
+}
