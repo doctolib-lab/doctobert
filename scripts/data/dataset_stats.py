@@ -6,19 +6,18 @@ import numpy as np
 from datasets import Dataset, load_dataset
 
 
-def load_hf_dataset(input_path: str) -> Dataset:
+def load_local_dataset(input_path: str) -> Dataset:
     """Load Hugging Face dataset from local file."""
-    if os.path.isfile(input_path):
-        if input_path.endswith(".txt"):
-            ds = load_dataset("text", data_files=input_path, split="train")
-        elif input_path.endswith(".jsonl"):
-            ds = load_dataset("json", data_files=input_path, split="train")
-        elif input_path.endswith(".parquet"):
-            ds = load_dataset("parquet", data_files=input_path, split="train")
-        else:
-            raise ValueError(f"Unsupported file extension: {input_path}")
-    else:
+    if input_path.endswith(".txt"):
+        ds = load_dataset("text", data_files=input_path, split="train")
+    elif input_path.endswith(".jsonl"):
+        ds = load_dataset("json", data_files=input_path, split="train")
+    elif input_path.endswith(".parquet"):
+        ds = load_dataset("parquet", data_files=input_path, split="train")
+    elif os.path.isdir(input_path):
         ds = load_dataset(input_path, split="train")
+    else:
+        raise ValueError(f"Unsupported path or file extension: {input_path}")
     return ds
 
 
@@ -27,7 +26,7 @@ def get_num_words(sample: dict) -> int:
 
 
 def main(input_path: str, num_proc: int = 16, max_samples: int | None = None):
-    ds = load_hf_dataset(input_path)
+    ds = load_local_dataset(input_path)
     print(ds)
 
     if max_samples is not None:

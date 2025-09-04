@@ -110,17 +110,16 @@ class BucketSortedIterableDataset(IterableDataset):
 
 def load_local_dataset(input_path: str) -> Dataset:
     """Load Hugging Face dataset from local file."""
-    if os.path.isfile(input_path):
-        if input_path.endswith(".txt"):
-            ds = load_dataset("text", data_files=input_path, split="train")
-        elif input_path.endswith(".jsonl"):
-            ds = load_dataset("json", data_files=input_path, split="train")
-        elif input_path.endswith(".parquet"):
-            ds = load_dataset("parquet", data_files=input_path, split="train")
-        else:
-            raise ValueError(f"Unsupported file extension: {input_path}")
-    else:
+    if input_path.endswith(".txt"):
+        ds = load_dataset("text", data_files=input_path, split="train")
+    elif input_path.endswith(".jsonl") or input_path.endswith(".json"):
+        ds = load_dataset("json", data_files=input_path, split="train")
+    elif input_path.endswith(".parquet"):
+        ds = load_dataset("parquet", data_files=input_path, split="train")
+    elif os.path.isdir(input_path):
         ds = load_dataset(input_path, split="train")
+    else:
+        raise ValueError(f"Unsupported path or file extension: {input_path}")
     return ds
 
 

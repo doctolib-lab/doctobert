@@ -17,19 +17,18 @@ def _make_shard_path(base_path: str, idx: int) -> str:
     return f"{root}/{idx:05d}{ext}"
 
 
-def load_hf_dataset(input_path: str) -> Dataset:
+def load_local_dataset(input_path: str) -> Dataset:
     """Load Hugging Face dataset from local file."""
-    if os.path.isfile(input_path):
-        if input_path.endswith(".txt"):
-            ds = load_dataset("text", data_files=input_path, split="train")
-        elif input_path.endswith(".jsonl"):
-            ds = load_dataset("json", data_files=input_path, split="train")
-        elif input_path.endswith(".parquet"):
-            ds = load_dataset("parquet", data_files=input_path, split="train")
-        else:
-            raise ValueError(f"Unsupported file extension: {input_path}")
-    else:
+    if input_path.endswith(".txt"):
+        ds = load_dataset("text", data_files=input_path, split="train")
+    elif input_path.endswith(".jsonl"):
+        ds = load_dataset("json", data_files=input_path, split="train")
+    elif input_path.endswith(".parquet"):
+        ds = load_dataset("parquet", data_files=input_path, split="train")
+    elif os.path.isdir(input_path):
         ds = load_dataset(input_path, split="train")
+    else:
+        raise ValueError(f"Unsupported path or file extension: {input_path}")
     return ds
 
 
@@ -54,7 +53,7 @@ def save_hf_dataset(ds: Dataset, output_path: str, output_shard_size: int | None
 
 
 def main(dataset_path: str, output_dir: str, target_labels: list[str] | str | None = None, num_workers: int = 32):
-    dataset = load_hf_dataset(dataset_path)
+    dataset = load_local_dataset(dataset_path)
     print(dataset)
 
     value_counts = Counter()
