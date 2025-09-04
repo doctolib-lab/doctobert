@@ -700,6 +700,7 @@ def main():
         else:
             predictions = np.argmax(predictions, axis=1)
             test_label_list = set([model.config.id2label[label_id] for label_id in labels])
+            test_label_list = [l for l in model.config.id2label.values() if l in test_label_list]
             cls_report = classification_report(labels, predictions, target_names=test_label_list)
             logger.info(cls_report)
             output_predict_file = os.path.join(training_args.output_dir, "predict_results.txt")
