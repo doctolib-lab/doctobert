@@ -34,8 +34,8 @@ export GEN_NAME=clinical_case
 
 dataset_path=/lustre/fsn1/projects/rech/kit/commun/corpus/en/PMC-Patients/pmc_patients_v2.parquet
 
-system_prompt_file=/lustre/fswork/projects/rech/kit/commun/doctobert/scripts/data_synthesis/prompts/system_prompt_rewrite_clinical_case.txt
-user_prompt_file=/lustre/fswork/projects/rech/kit/commun/doctobert/scripts/data_synthesis/prompts/user_prompt_rewrite_clinical_case.txt
+system_prompt_file=/lustre/fswork/projects/rech/kit/commun/doctobert/scripts/data_synthesis/prompts/clinical_case/system_prompt_rewrite_clinical_case.txt
+user_prompt_file=/lustre/fswork/projects/rech/kit/commun/doctobert/scripts/data_synthesis/prompts/clinical_case/user_prompt_rewrite_clinical_case.txt
 
 # model_args=(
 #     --model_name_or_path /lustre/fswork/projects/rech/kit/commun/pretrained/models/Qwen/Qwen3-235B-A22B-Instruct-2507-FP8

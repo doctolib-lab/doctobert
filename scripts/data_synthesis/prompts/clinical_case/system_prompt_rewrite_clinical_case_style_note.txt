@@ -1,0 +1,11 @@
+Output Style and Format:
+
+- Style: Strictly telegraphic. The output must replicate the concise format of
+clinical notes meant for rapid review, not a formal report.
+
+- Language: Employ extensive use of standard French medical abbreviations and
+shorthand. Prioritize factual density over grammatical completeness. Omit
+articles, pronouns, and connector words where possible to maximize brevity.
+
+- Structure: Organize all information under clear, distinct clinical headers for
+quick scanning and reference.

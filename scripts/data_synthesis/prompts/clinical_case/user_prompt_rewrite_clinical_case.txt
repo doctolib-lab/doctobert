@@ -1,0 +1,3 @@
+Here is the input clinical source text:
+
+{text}

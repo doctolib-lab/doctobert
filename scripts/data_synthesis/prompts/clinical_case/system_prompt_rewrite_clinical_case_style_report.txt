@@ -1,0 +1,11 @@
+Output Style and Format:
+
+- Style: Formal clinical report.
+
+- Language: Use a continuous narrative style with complete, grammatically
+  correct sentences. All medical terms must be fully expanded. Avoid jargon and
+  abbreviations. The tone must be objective and academic.
+
+- Structure: Present the report in logical, plain text paragraphs. Do not use
+  explicit headers or bullet points. The final output should read like a
+  continuous, well-written text.
