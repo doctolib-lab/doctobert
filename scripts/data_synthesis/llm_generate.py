@@ -55,7 +55,7 @@ def process_batch(
                 user_prompt_text = item.get(text_column_name, "")
                 if user_prompt:
                     user_prompt_text = user_prompt.format(text=user_prompt_text)
-            elif gen_name == "ICD_augment":
+            elif gen_name == "ICD":
                 labels = item.get("labels", {}) or {}
                 ctx = {
                     "definition_fr": item.get("definition_fr", ""),
@@ -63,8 +63,16 @@ def process_batch(
                     "skos_notation": item.get("skos_notation", ""),
                 }
                 user_prompt_text = user_prompt.format(**ctx)
-            elif gen_name == "EHR" and user_prompt:
+            elif gen_name == "EHR":
                 user_prompt_text = user_prompt.format(text=item.get(text_column_name, ""))
+            elif gen_name = "dictionnary":
+                ctx = {
+                    "term": item.get("term", ""),
+                    "definition": item.get("definition", ""),
+                    "synonyms":  item.get("synonyms", ""),
+                    "grammatical_category": item.get("grammatical_category","")
+                }
+                user_prompt_text = user_prompt.format(**ctx)
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")
 
@@ -75,10 +83,11 @@ def process_batch(
         if system_prompt:
             if gen_name == "clinical_case":
                 gen_style = "report" if random.random() < 0.2 else "note"
-            elif gen_name == "ICD_augment":
+            elif gen_name == "ICD":
                 gen_style = "wiki" if random.random() < 0.5 else "textbook"
             elif gen_name == "EHR":
-                # EHR translation: same system prompt for all (no suffix)
+                system_msg = system_prompt
+            elif gen_name = "dictionnary":
                 system_msg = system_prompt
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")

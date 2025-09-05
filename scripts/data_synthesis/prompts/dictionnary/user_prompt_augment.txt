@@ -1,0 +1,5 @@
+Here is the definition to augment:
+Term: {term}
+Definition: {definition}
+Synonyms(if any): {synonyms}
+Grammatical category: {grammatical_category}
