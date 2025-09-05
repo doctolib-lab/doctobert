@@ -1,0 +1,4 @@
+Data to use to produce a long French text:
+- definition_fr = {definition_fr}
+- label_fr = {label_fr}
+- skos_notation = {skos_notation}

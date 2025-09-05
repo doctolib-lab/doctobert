@@ -49,20 +49,35 @@ def process_batch(
 
     prompts = []
     for item in batch:
-        # format instruction
-        user_prompt_text = item[text_column_name]
+        # Build the user message
         if user_prompt:
-            user_prompt_text = user_prompt.format(text=user_prompt_text)
-        messages = [{"role": "user", "content": user_prompt_text}]
-
-        # add system message
-        gen_style = None
-        if system_prompt:
-            # tmp: sample a generation style
             if gen_name == "clinical_case":
-                gen_style = "report" if random.random() < 0.2 else "note"
+                user_prompt_text = item.get(text_column_name, "")
+                if user_prompt:
+                    user_prompt_text = user_prompt.format(text=user_prompt_text)
+            elif gen_name == "ICD_augment":
+                labels = item.get("labels", {}) or {}
+                ctx = {
+                    "definition_fr": item.get("definition_fr", ""),
+                    "label_fr": labels.get("fr", item.get("label_fr", "")),
+                    "skos_notation": item.get("skos_notation", ""),
+                }
+                user_prompt_text = user_prompt.format(**ctx)
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")
+
+            messages = [{"role": "user", "content": user_prompt_text}]
+
+        # Add system message
+        gen_style = None
+        if system_prompt:
+            if gen_name == "clinical_case":
+                gen_style = "report" if random.random() < 0.2 else "note"
+            elif gen_name == "ICD_augment":
+                gen_style = "wiki" if random.random() < 0.5 else "textbook"
+            else:
+                raise ValueError(f"Unsupported generation name: {gen_name}")
+
             system_prompt_suffix = system_prompt_suffixes.get(gen_style, "") if system_prompt_suffixes else ""
             system_msg = system_prompt + system_prompt_suffix
             messages.insert(0, {"role": "system", "content": system_msg})
