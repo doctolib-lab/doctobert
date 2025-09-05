@@ -1,0 +1,266 @@
+"""Use a local vllm engine to generate data."""
+
+import os
+import random
+import time
+from pathlib import Path
+
+from datasets import Dataset, load_dataset
+from tqdm import tqdm
+from vllm import LLM, SamplingParams
+
+# tmp control
+gen_name = os.environ.get("GEN_NAME")
+
+
+def load_prompt(p: Path | str) -> str:
+    """Load prompt from local file."""
+    p = str(p) if isinstance(p, Path) else p
+    with open(p, encoding="utf-8") as f:
+        return f.read()
+
+def load_local_dataset(input_path: str) -> Dataset:
+    """Load Hugging Face dataset from local file."""
+    if input_path.endswith(".txt"):
+        ds = load_dataset("text", data_files=input_path, split="train")
+    elif input_path.endswith(".jsonl"):
+        ds = load_dataset("json", data_files=input_path, split="train")
+    elif input_path.endswith(".parquet"):
+        ds = load_dataset("parquet", data_files=input_path, split="train")
+    elif os.path.isdir(input_path):
+        ds = load_dataset(input_path, split="train")
+    else:
+        raise ValueError(f"Unsupported path or file extension: {input_path}")
+    return ds
+
+
+def process_batch(
+    batch: list[dict],
+    llm: LLM,
+    params: SamplingParams,
+    system_prompt: str | None = None,
+    system_prompt_suffixes: dict[str, str] | None = None,
+    user_prompt: str | None = None,
+    text_column_name: str = "text",
+    output_column_name: str = "output",
+    enable_thinking: bool = False,
+) -> list[dict]:
+    """Process a batch of data using local vllm engine."""
+
+    prompts = []
+    for item in batch:
+        # format instruction
+        user_prompt_text = item[text_column_name]
+        if user_prompt:
+            user_prompt_text = user_prompt.format(text=user_prompt_text)
+        messages = [{"role": "user", "content": user_prompt_text}]
+
+        # add system message
+        gen_style = None
+        if system_prompt:
+            # tmp: sample a generation style
+            if gen_name == "clinical_case":
+                gen_style = "report" if random.random() < 0.2 else "note"
+            else:
+                raise ValueError(f"Unsupported generation name: {gen_name}")
+            system_prompt_suffix = system_prompt_suffixes.get(gen_style, "") if system_prompt_suffixes else ""
+            system_msg = system_prompt + system_prompt_suffix
+            messages.insert(0, {"role": "system", "content": system_msg})
+        item["gen_style"] = gen_style
+
+        # apply chat template
+        formatted_prompt = llm.get_tokenizer().apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+            enable_thinking=enable_thinking,
+        )
+        prompts.append(formatted_prompt)
+
+    # todo: llm.chat
+    outputs = llm.generate(prompts, params)
+
+    if len(outputs) != len(batch):
+        raise RuntimeError(
+            f"Number of outputs ({len(outputs)}) does not match batch size ({len(batch)})."
+        )
+
+    for item, out, prompt in zip(batch, outputs, prompts):
+        item[output_column_name] = out.outputs[0].text.strip()
+        item["gen_configs"] = {
+            "model": llm.llm_engine.model_config.model,
+            "temperature": params.temperature,
+            "top_p": params.top_p,
+            "top_k": params.top_k,
+            "min_p": params.min_p,
+            "max_tokens": params.max_tokens,
+            "gen_style": item.pop("gen_style", None),
+            "prompt": prompt,  # debug
+        }
+
+    return batch
+
+
+# Generate outputs, update dataset in batches, and overwrite checkpoint
+def process_dataset(
+    dataset: Dataset,
+    llm: LLM,
+    params: SamplingParams,
+    output_dir: str,
+    batch_size: int = 512,
+    system_prompt: str | None = None,
+    system_prompt_suffixes: dict[str, str] | None = None,
+    user_prompt: str | None = None,
+    text_column_name: str = "text",
+    output_column_name: str = "output",
+    enable_thinking: bool = False,
+):
+    """Process dataset in batches."""
+
+    # Calculate total number of batches
+    num_batches = (len(dataset) + batch_size - 1) // batch_size
+
+    for i in tqdm(range(num_batches)):
+        start_idx = i * batch_size
+        end_idx = min((i + 1) * batch_size, len(dataset))
+        # Slice dataset to avoid materializing entire dataset rows eagerly
+        shard = dataset.select(range(start_idx, end_idx))
+        batch_records = list(shard)
+
+        processed_records = process_batch(
+            batch_records,
+            llm,
+            params,
+            system_prompt=system_prompt,
+            system_prompt_suffixes=system_prompt_suffixes,
+            user_prompt=user_prompt,
+            text_column_name=text_column_name,
+            output_column_name=output_column_name,
+            enable_thinking=enable_thinking,
+        )
+
+        shard_ds = Dataset.from_list(processed_records)
+        shard_ds.to_parquet(f"{output_dir}/{i:09d}.parquet")
+
+
+# Main function to control workflow
+def main(
+    dataset_path: str,
+    model_name_or_path: str,
+    # i/o
+    output_dir: str,
+    system_prompt_file: str | None = None,
+    user_prompt_file: str | None = None,
+    text_column_name: str = "text",
+    output_column_name: str = "output",
+    # load params
+    # dtype: str = "bfloat16",
+    tensor_parallel_size: int = 1,
+    # max_model_len: int = 2048,
+    # max_num_seqs: int = 128,
+    gpu_memory_utilization: float = 0.95,
+    # infer params
+    max_tokens: int = 8192,
+    temperature: float = 1.0,
+    top_p: float = 1.0,
+    top_k: int = 0,
+    min_p: float = 0.0,
+    # repetition_penalty: float = 1.0,
+    enable_thinking: bool = False,
+    # json_schema: str | None = None,
+    # run params
+    batch_size: int = 512,
+    shuffle: bool = False,
+    seed: int = 42,
+    start_idx: int = 0,
+    max_samples: int | None = None,
+):
+    # seed for reproducibility of topic shuffling
+    random.seed(seed)
+
+    # load dataset
+    dataset = load_local_dataset(dataset_path)
+    print(f"Loaded {dataset.num_rows:,d} examples from {dataset_path}")
+
+    # shuffle dataset
+    if shuffle:
+        dataset = dataset.shuffle(seed=seed)
+        print("Shuffled dataset")
+
+    if start_idx > 0:
+        dataset = dataset.select(range(start_idx, len(dataset)))
+        print(f"Skipped the first {start_idx:,d} examples")
+
+    # take max samples
+    if max_samples is not None:
+        dataset = dataset.select(range(max_samples))
+        print(f"Sampled the first {dataset.num_rows:,d} examples")
+
+    # load llm
+    print("Start Local vllm engine...")
+    llm = LLM(
+        model=model_name_or_path,
+        trust_remote_code=True,
+        # dtype=dtype,
+        # max_model_len=max_model_len,  # limited by kv-cache
+        # max_num_seqs=max_num_seqs,
+        tensor_parallel_size=tensor_parallel_size,
+        gpu_memory_utilization=gpu_memory_utilization,
+    )
+
+    # gen params
+    # guided_decoding_params_json = None
+    # if json_schema is not None:
+    #     output_json_schema = OUTPUT_SCHEMAS.get(json_schema)
+    #     guided_decoding_params_json = GuidedDecodingParams(json=output_json_schema)
+
+    params = SamplingParams(
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+        min_p=min_p,
+        # repetition_penalty=repetition_penalty,
+        # stop_token_ids=stop_token_ids,
+        # guided_decoding=guided_decoding_params_json,
+    )
+
+    # load prompts
+    # system prompt
+    system_prompt = load_prompt(system_prompt_file) if system_prompt_file else None
+    # tmp: extra system prompt
+    system_prompt_suffixes = {}
+    if system_prompt_file:
+        system_prompt_file_p = Path(system_prompt_file)
+        for p in system_prompt_file_p.parent.glob(system_prompt_file_p.stem + "_style_*.txt"):
+            suffix_name = p.stem.split("_style_")[-1]
+            system_prompt_suffixes[suffix_name] = load_prompt(p)
+    # user prompt
+    user_prompt = load_prompt(user_prompt_file) if user_prompt_file else None
+
+    start_time = time.perf_counter()
+
+    process_dataset(
+        dataset,
+        llm,
+        params,
+        output_dir,
+        batch_size=batch_size,
+        system_prompt=system_prompt,
+        system_prompt_suffixes=system_prompt_suffixes,
+        user_prompt=user_prompt,
+        text_column_name=text_column_name,
+        output_column_name=output_column_name,
+        enable_thinking=enable_thinking,
+    )
+
+    print(
+        f"Generation completed in {time.strftime('%Hh%Mm%Ss', time.gmtime(time.perf_counter() - start_time))}.\n"
+        f"Generated data is saved in {output_dir}"
+    )
+
+
+if __name__ == "__main__":
+    import fire
+
+    fire.Fire(main)

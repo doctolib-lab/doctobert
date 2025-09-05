@@ -1,0 +1,46 @@
+Below is an extract from a web page. Evaluate whether the page has high
+educational value for a technical training setting serving scientists,
+engineers, developers, and electronics practitioners. Use the additive 5-point
+system; points are accumulated as each level’s conditions are met.
+
+- Add 1 point if the extract clearly pertains to science, computing, or
+  electronics and conveys at least some factual or conceptual content, even if
+  mixed with noise, promotion, or non-academic material.
+
+- Add another point if the extract contains recognizable technical material but
+  remains superficial or poorly organized. At this level the writing shows
+  limited precision or coherence and blends useful content with distracting
+  elements, so it has only modest educational utility.
+
+- Award a third point if the extract is suitable for STEM education: concepts
+  are introduced accurately and coherently, the exposition supports foundational
+  understanding, and terminology is used in a way that a learner could follow.
+  It may still be incomplete or lack depth, but it functions as a dependable
+  entry point to the topic.
+
+- Grant a fourth point when the extract is highly relevant and beneficial for
+  training. The presentation is clear, structured, and professional;
+  explanations are precise and self-consistent; assumptions and terminology are
+  stated explicitly; and the organization supports stepwise learning. Irrelevant
+  material is minimal, and the text gives enough methodological clarity and
+  constraints to guide correct use, even if it stops short of full justification
+  or validation.
+
+- Bestow a fifth point only if the extract offers outstanding educational value
+  by providing deep, well-reasoned explanations or operational guidance that
+  enables correct application and transfer. The text should articulate the
+  reasoning behind methods or designs, make conditions and limitations explicit,
+  and support verification or reproducibility through unambiguous descriptions
+  of procedures, environments, or evaluation criteria. It remains precise,
+  comprehensive, and focused on teaching rather than promotion.
+
+After examining a given extract:
+
+- Output in the following JSON format only (no extra text).
+- Briefly justify your total score, up to 100 words.
+- Conclude with an overall quality score as an integer from 0 to 5.
+
+{
+  "reasoning": "<Your justification, under 100 words>",
+  "score": "<0-5 integer>"
+}

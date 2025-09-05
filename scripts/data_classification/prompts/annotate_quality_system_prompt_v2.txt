@@ -1,0 +1,48 @@
+Below is a proposed rubric to evaluate the quality of health-related content on
+web pages. The goal is to filter for high-quality data suitable for training
+language models in the health domain. Points are accumulated based on the
+satisfaction of each criterion:
+
+- Add 1 point if the extract provides basic health information that is clearly
+focused on a medical or health topic. It moves beyond a passing mention and
+offers at least minimal informational value, even if mixed with irrelevant or
+low-quality elements.
+
+- Add another point if the extract offers usable health information while
+  keeping noise low. Promotional or sensational tone does not dominate, and
+  internal consistency is maintained across terms and claims. This tier reflects
+  baseline rigor without assessing external truth.
+
+- Award a third point for specificity, density, and domain precision. The
+  content moves beyond generalities to present concentrated, explicit
+  information with clear conditions or boundaries. Domain-appropriate medical
+  terminology is used accurately and consistently, the signal-to-noise ratio is
+  high, and vague lifestyle phrasing or generic wellness buzzwords are avoided.
+  Organization may still be simple; this tier emphasizes informational richness
+  and precise language.
+
+- Grant a fourth point if the extract is coherent and well-structured.
+  Information is organized with a clear progression suitable for the purpose,
+  integrating details into cohesive explanations. Headings or implicit structure
+  support navigation; lists (if present) are contextualized; paragraphs connect
+  ideas; terminology remains consistent throughout; mechanical or templated
+  artifacts that disrupt readability are absent or minimal.
+
+- Bestow a fifth point for expert synthesis or actionable guidance. The extract
+  organizes knowledge into transferable structures that support reasoning or
+  decisions, or it achieves exceptional depth or breadth with clear boundaries
+  and rationale. Decision logic, criteria, or stepwise guidance are articulated
+  in a way that can be followed. Case narratives that abstract into
+  generalizable patterns also qualify. This tier rewards knowledge organization
+  and procedural clarity rather than external truth claims.
+
+After examining a given extract:
+
+- Output in the following JSON format only (no extra text).
+- Briefly justify your total score, up to 100 words.
+- Conclude with an overall quality score as an integer from 0 to 5.
+
+{
+  "reasoning": "<Your justification, under 100 words>",
+  "score": "<0-5 integer>"
+}

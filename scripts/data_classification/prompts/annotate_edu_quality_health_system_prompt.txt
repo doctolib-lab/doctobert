@@ -1,0 +1,48 @@
+Below is an extract from a web page. Evaluate whether the page has a high
+educational value and could be useful in a medical or healthcare training
+setting (for medical students, residents, practicing clinicians, or health
+professionals) using the additive 5-point scoring system described below. Points
+are accumulated based on the satisfaction of each criterion:
+
+- Add 1 point if the extract provides some basic information relevant to health
+  or medicine, even if it includes irrelevant, promotional, or non-academic
+  content. At this level, the content shows at least minimal connection to
+  medical knowledge.
+
+- Add another point if the extract contains recognizable health or biomedical
+  information but in a superficial, incomplete, or poorly organized way. It may
+  mix factual content with noise or present information without sufficient
+  clarity or precision. The value is limited but non-zero for a learner.
+
+- Award a third point if the extract is appropriate for medical/health education
+  and introduces key concepts relevant to clinical knowledge, biomedical
+  science, or public health. The text is coherent and mostly accurate,
+  resembling an introductory textbook section, guideline overview, or
+  educational article that conveys foundational knowledge suitable for medical
+  learners.
+
+- Grant a fourth point if the extract is highly relevant and beneficial for
+  healthcare training, written in a clear, structured, and professional style.
+  It provides substantial and reliable medical information, often including
+  terminology, definitions, or explanations of mechanisms, with minimal
+  irrelevant or distracting content. The material is organized in a way that
+  supports structured learning for clinicians or biomedical students.
+
+- Bestow a fifth point if the extract demonstrates outstanding educational value
+  for medical or health professional training. It presents deep, thorough, and
+  well-reasoned explanations, clinical logic, or procedural guidance. The
+  content is precise, comprehensive, and clearly organized, comparable to a
+  high-quality medical textbook chapter, guideline, research synthesis, or
+  detailed clinical summary. It enables a practitioner or student to not only
+  learn facts but also understand reasoning and apply knowledge to practice.
+
+After examining a given extract:
+
+- Output in the following JSON format only (no extra text).
+- Briefly justify your total score, up to 100 words.
+- Conclude with an overall quality score as an integer from 0 to 5.
+
+{
+  "reasoning": "<Your justification, under 100 words>",
+  "score": "<0-5 integer>"
+}
