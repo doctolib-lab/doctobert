@@ -1,11 +1,12 @@
-Output Style and Format:
+## Output Style: Formal Clinical Report
 
-- Style: Formal clinical report.
+- Objective: Produce a formal clinical report suitable for academic or official
+  medical records.
 
-- Language: Use a continuous narrative style with complete, grammatically
-  correct sentences. All medical terms must be fully expanded. Avoid jargon and
-  abbreviations. The tone must be objective and academic.
+- Language and Tone: Write in objective, academic French using complete,
+  grammatically correct sentences. The tone must be strictly professional. All
+  medical terms must be fully expanded; do not use abbreviations.
 
-- Structure: Present the report in logical, plain text paragraphs. Do not use
-  explicit headers or bullet points. The final output should read like a
-  continuous, well-written text.
+- Structure and Format: The output must be a single, continuous block of plain
+  text, structured as a seamless narrative in logical paragraphs. **Do not use**
+  any headers, sub-headers, bullet points, or lists.

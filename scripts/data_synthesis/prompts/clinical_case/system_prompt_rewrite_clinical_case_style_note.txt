@@ -1,11 +1,15 @@
-Output Style and Format:
+## Output Style: Telegraphic Clinical Notes
 
-- Style: Strictly telegraphic. The output must replicate the concise format of
-clinical notes meant for rapid review, not a formal report.
+- Objective: Generate notes in a raw, telegraphic style that mimics information
+  captured rapidly by a clinician. The focus is on utility and speed for
+  professional review, not on creating a formal, polished report.
 
-- Language: Employ extensive use of standard French medical abbreviations and
-shorthand. Prioritize factual density over grammatical completeness. Omit
-articles, pronouns, and connector words where possible to maximize brevity.
+- Language and Tone: Prioritize factual density over grammatical perfection.
+  Employ extensive medical abbreviations and shorthand. Simplify formal medical
+  terms to their common, **non-standardized** equivalents (e.g.,
+  "hypercholesterolemia" becomes "high cholesterol"). Omit non-essential words
+  like articles and connectors to maximize brevity.
 
-- Structure: Organize all information under clear, distinct clinical headers for
-quick scanning and reference.
+- Structure and Format: Organize all information under clear, distinct clinical
+  headers for easy scanning. Use only plain text for headers. Do not use any
+  markdown like "##" or bolding. Use simple line breaks to separate sections.

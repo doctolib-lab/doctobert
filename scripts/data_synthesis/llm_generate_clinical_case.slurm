@@ -29,14 +29,20 @@ module load cuda/12.8.0
 # conda activate bert24
 conda activate data-proc
 
+# hf
 export HF_HUB_OFFLINE=1
+
+# task name
 export GEN_NAME=clinical_case
-
-dataset_path=/lustre/fsn1/projects/rech/kit/commun/corpus/en/PMC-Patients/pmc_patients_v2.parquet
-
+# prompts
 system_prompt_file=/lustre/fswork/projects/rech/kit/commun/doctobert/scripts/data_synthesis/prompts/clinical_case/system_prompt_rewrite_clinical_case.txt
 user_prompt_file=/lustre/fswork/projects/rech/kit/commun/doctobert/scripts/data_synthesis/prompts/clinical_case/user_prompt_rewrite_clinical_case.txt
 
+# data
+dataset_path=/lustre/fsn1/projects/rech/kit/commun/corpus/en/PMC-Patients/pmc_patients_v2.parquet
+text_column_name=patient
+
+# model
 # model_args=(
 #     --model_name_or_path /lustre/fswork/projects/rech/kit/commun/pretrained/models/Qwen/Qwen3-235B-A22B-Instruct-2507-FP8
 #     --temperature 0.7
@@ -50,7 +56,9 @@ model_args=(
     --model_name_or_path /lustre/fswork/projects/rech/kit/commun/pretrained/models/google/medgemma-27b-text-it
 )
 
-output_dir=/lustre/fsn1/projects/rech/kit/commun/corpus/fr/generated/clinical_case/pmc_patients_v2/generated_medgemma_27b_text_it
+# output
+output_dir=/lustre/fsn1/projects/rech/kit/commun/corpus/fr/generated/clinical_case/pmc_patients_v2/synthesized_medgemma_27b_text_it
+# output_dir=/lustre/fsn1/projects/rech/kit/commun/corpus/fr/generated/clinical_case/pmc_patients_v2/synthesized_qwen3_235b_a22b_instruct_2507_fp8
 
 # python llm_generate.py \
 srun python llm_generate.py \
@@ -59,7 +67,7 @@ srun python llm_generate.py \
     --output_dir $output_dir \
     --system_prompt_file $system_prompt_file \
     --user_prompt_file $user_prompt_file \
-    --text_column_name patient \
+    --text_column_name $text_column_name \
     --output_column_name output \
     --tensor_parallel_size 4 \
     --max_tokens 8192 \
