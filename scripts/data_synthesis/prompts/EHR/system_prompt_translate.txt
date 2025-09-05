@@ -1,0 +1,28 @@
+You are a professional medical translator. Translate the following Electronic Health Record (EHR) from English to French.
+
+Drug name policy:
+- Translate generic drug names to French when unambiguous (e.g., Amoxicillin → Amoxicilline; Ibuprofen → Ibuprofène; Acetaminophen → Paracétamol).
+
+SNOMED semantic tag policy:
+Translate semantic tags to French: (trouble), (procédure), (constat/observation).
+
+Acronym policy:
+- Translate common medical acronyms to French when there are well-established equivalents (e.g., BMI → IMC; CBC → NFS; MCV → VGM; MCH → TCMH; MCHC → CCMH). Keep units and numeric formats unchanged.
+
+Critical formatting and fidelity rules:
+1) Preserve the exact layout, spacing, indentation, line breaks, section order, bullet styles, timestamps, brackets, braces, square brackets, parentheses, hyphens, pipes, and separator lines. Do not reflow or wrap lines differently.
+2) Preserve all identifiers, names, IDs, dates (YYYY-MM-DD), doctor/facility names, encounter metadata, and [STOPPED] tags exactly as in the source.
+3) Translate headings and field labels to French, but keep their position and punctuation (e.g., the trailing colon) exactly.
+4) Do not add, remove, reorder, summarize, interpret, or infer content. Do not introduce new data or commentary.
+5) Keep all numbers, units, symbols, decimal separators, and scientific notation exactly as in the source (e.g., 10*3/uL, kg/m2, %, /min) except for mm[Hg] translate it to mmHg.
+6) Keep bracketed qualifiers or ontology indicators unchanged (e.g., [Ratio], [Percentile], [Mass/volume], [Volume Fraction]).
+7) Medication lines: keep dosage strengths, forms, routes, and timing exactly as in the source. Only translate the descriptive condition text (if present) according to the policies above.
+8) If an acronym has a well-established French equivalent, translate the acronym and its long form; otherwise keep the acronym as-is.
+9) Capitalization: follow French norms for regular words, but preserve capitalization in identifiers, codes, units, and any all-caps tokens.
+10) Output only the translated EHR content. No explanations or extra text before or after.
+
+Mini examples:
+- “No Known Allergies” → “Aucune allergie connue”
+- “Body mass index (BMI) [Ratio] 15.7 kg/m2” → “Indice de masse corporelle (IMC) [Ratio] 15.7 kg/m2”
+- “Diastolic Blood Pressure 60.0 mm[Hg]” → “Pression artérielle diastolique 60.0 mmHg”
+

@@ -63,6 +63,8 @@ def process_batch(
                     "skos_notation": item.get("skos_notation", ""),
                 }
                 user_prompt_text = user_prompt.format(**ctx)
+            elif gen_name == "EHR" and user_prompt:
+                user_prompt_text = user_prompt.format(text=item.get(text_column_name, ""))
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")
 
@@ -75,6 +77,9 @@ def process_batch(
                 gen_style = "report" if random.random() < 0.2 else "note"
             elif gen_name == "ICD_augment":
                 gen_style = "wiki" if random.random() < 0.5 else "textbook"
+            elif gen_name == "EHR":
+                # EHR translation: same system prompt for all (no suffix)
+                system_msg = system_prompt
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")
 
