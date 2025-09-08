@@ -38,7 +38,7 @@ def load_local_dataset(input_path: str) -> Dataset:
         ds = load_dataset("parquet", data_files=input_path, split="train")
     elif os.path.isdir(input_path):
         ds = load_dataset(input_path, split="train")
-    elif input_path.endswith(".zip")::
+    elif input_path.endswith(".zip"):
         ds = Dataset.from_generator(lambda: file_generator(input_path))
     else:
         raise ValueError(f"Unsupported path or file extension: {input_path}")
@@ -76,7 +76,7 @@ def process_batch(
                 user_prompt_text = user_prompt.format(**ctx)
             elif gen_name == "EHR":
                 user_prompt_text = user_prompt.format(text=item.get(text_column_name, ""))
-            elif gen_name = "dictionnary":
+            elif gen_name == "dictionnary":
                 ctx = {
                     "term": item.get("term", ""),
                     "definition": item.get("definition", ""),
@@ -98,7 +98,7 @@ def process_batch(
                 gen_style = "wiki" if random.random() < 0.5 else "textbook"
             elif gen_name == "EHR":
                 system_msg = system_prompt
-            elif gen_name = "dictionnary":
+            elif gen_name == "dictionnary":
                 system_msg = system_prompt
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")
