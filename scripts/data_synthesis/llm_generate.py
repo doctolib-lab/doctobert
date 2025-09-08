@@ -8,10 +8,19 @@ from pathlib import Path
 from datasets import Dataset, load_dataset
 from tqdm import tqdm
 from vllm import LLM, SamplingParams
+import zipfile
 
 # tmp control
 gen_name = os.environ.get("GEN_NAME")
 
+def file_generator(zip_path, encoding="utf-8"):
+    with zipfile.ZipFile(zip_path) as zf:
+        for name in zf.namelist():
+            if name.endswith(".txt"):
+                with zf.open(name) as f:
+                    yield {
+                        "text": f.read().decode(encoding)
+                    }
 
 def load_prompt(p: Path | str) -> str:
     """Load prompt from local file."""
@@ -29,6 +38,8 @@ def load_local_dataset(input_path: str) -> Dataset:
         ds = load_dataset("parquet", data_files=input_path, split="train")
     elif os.path.isdir(input_path):
         ds = load_dataset(input_path, split="train")
+    elif input_path.endswith(".zip")::
+        ds = Dataset.from_generator(lambda: file_generator(input_path))
     else:
         raise ValueError(f"Unsupported path or file extension: {input_path}")
     return ds
