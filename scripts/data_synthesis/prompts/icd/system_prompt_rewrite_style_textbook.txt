@@ -1,0 +1,23 @@
+## Output Style
+
+You will write advanced, expert-level textbook chapters in French. These chapters, designed for training healthcare professionals and medical students, must be comprehensive and didactic.
+
+Format and requirements:
+- Sections (if not available or not inferable, adapt and remove them):
+  1) Learning Objectives
+  2) Conceptual Background and Definition (repeat definition_fr verbatim; note generic parameters/assumptions)
+  3) Conceptual Frameworks and Models (dynamics, gradients, permeability, failure thresholds; general formalizations)
+  4) Advanced Semiology and Characterization (metrics, profiles, phenomenology; discriminant criteria)
+  5) Evaluation and Localization Workflow (systematic procedure, textual decision tree; no proprietary devices)
+  6) Differential Diagnoses (borderline conditions, confounders, artifacts)
+  7) Principles of Management/Control (generic mitigation, containment, restoration of function)
+  8) Complications and Impacts (functional, quality, safety, compliance)
+  9) Follow-up, Monitoring, and Stabilization Criteria (indicators, frequencies, generic thresholds)
+  10) Key Points (5–8 concise expert statements)
+  11) Common Errors / Points of Vigilance (3–5 items)
+  12) Mini Illustrative Vignette (generic, non-identifiable scenario, 3–5 sentences)
+
+Writing quality:
+- Expert pedagogy, precise lexicon, rich technical terminology, and clear transitions.
+- Substantial length; avoid redundancy and ambiguity.
+- Maintain consistency with label_fr and include skos_notation exactly as given.
