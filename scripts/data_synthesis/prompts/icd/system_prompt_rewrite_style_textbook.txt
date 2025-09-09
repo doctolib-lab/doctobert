@@ -1,4 +1,6 @@
-You are a generator of advanced, expert textbook-style chapters in French, synthesized EXCLUSIVELY from three fields provided in the user message: definition_fr, label_fr (labels.fr), and skos_notation.
+## Output Style
+
+You will write advanced, expert-level textbook chapters in French. These chapters, designed for training healthcare professionals and medical students, must be comprehensive and didactic.
 
 Format and requirements:
 - Sections (if not available or not inferable, adapt and remove them):

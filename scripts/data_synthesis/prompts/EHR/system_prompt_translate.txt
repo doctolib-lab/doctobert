@@ -25,4 +25,3 @@ Mini examples:
 - “No Known Allergies” → “Aucune allergie connue”
 - “Body mass index (BMI) [Ratio] 15.7 kg/m2” → “Indice de masse corporelle (IMC) [Ratio] 15.7 kg/m2”
 - “Diastolic Blood Pressure 60.0 mm[Hg]” → “Pression artérielle diastolique 60.0 mmHg”
-

@@ -33,14 +33,14 @@ conda activate data-proc
 export HF_HUB_OFFLINE=1
 
 # task name
-export GEN_NAME=ICD
+export GEN_NAME=icd
 
 # prompts
-system_prompt_file=/lustre/fswork/projects/rech/kit/usc72ix/doctobert/scripts/data_synthesis/prompts/ICD/system_prompt_augment.txt
-user_prompt_file=/lustre/fswork/projects/rech/kit/usc72ix/doctobert/scripts/data_synthesis/prompts/ICD/user_prompt_augment.txt
+system_prompt_file=/lustre/fswork/projects/rech/kit/usc72ix/doctobert/scripts/data_synthesis/prompts/icd/system_prompt_augment.txt
+user_prompt_file=/lustre/fswork/projects/rech/kit/usc72ix/doctobert/scripts/data_synthesis/prompts/icd/user_prompt_augment.txt
 
 # data
-dataset_path=/lustre/fswork/projects/rech/kit/commun/data_synthesis/ICD/cim11_definitions.json
+dataset_path=/lustre/fswork/projects/rech/kit/commun/data_synthesis/icd/cim11_definitions.json
 text_column_name=text
 
 # model
@@ -58,7 +58,7 @@ model_args=(
 )
 
 # output
-output_dir=/lustre/fswork/projects/rech/kit/commun/data_synthesis/ICD/output
+output_dir=/lustre/fswork/projects/rech/kit/commun/data_synthesis/icd/output
 # python llm_generate.py \
 srun python llm_generate.py \
     "${model_args[@]}" \

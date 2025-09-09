@@ -1,2 +1,3 @@
-Now translate the EHR below. Return only the translated EHR in French with the exact same layout and spacing. 
+Now translate the EHR below. Return only the translated EHR in French with the exact same layout and spacing.
+
 {text}

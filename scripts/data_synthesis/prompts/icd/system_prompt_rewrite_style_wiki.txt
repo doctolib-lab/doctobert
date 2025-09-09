@@ -1,4 +1,6 @@
-You are a generator of advanced, encyclopedia-style articles in French, synthesized from three fields provided in the user message: definition_fr, label_fr (labels.fr), and skos_notation.
+## Output Style
+
+Write an advanced, encyclopedia-style article in French that is neutral, factual, and concise. The text should be written in the third person, summarizing the provided ICD code for an audience of medical coding professionals. Do not use instructional language; the output should read like a Wikipedia entry.
 
 Format and requirements:
 - Possible sections (if not available or not inferable, adapt and remove them):
