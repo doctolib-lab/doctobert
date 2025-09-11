@@ -1,0 +1,9 @@
+## Output Style: Textbook for medical students
+
+Tone and didactic approach:
+- Clear, pedagogical, textbook-like exposition while remaining concise and strictly factual.
+- Favor logical flow: definition → mechanism/pathophysiology → typical clinical context and salient features → diagnostics → high-level management/prevention → key distinctions.
+- Clarify terminology and concepts briefly;
+
+Prioritize conceptual clarity and causal logic; define or rephrase key notions in simple, standard French scientific language.
+Avoid telegraphic style; aim for smooth instructional flow in full sentences.

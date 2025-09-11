@@ -95,7 +95,9 @@ def process_batch(
                 gen_style = "report" if random.random() < 0.2 else "note"
             elif gen_name == "icd":
                 gen_style = "wiki" if random.random() < 0.5 else "textbook"
-            elif gen_name in ["ehr", "vocabulary"]:
+            elif gen_style == "vocabulary":
+                gen_style = "wiki" if random.random() < 0.5 else "textbook"
+            elif gen_name == "ehr":
                 system_msg = system_prompt
             else:
                 raise ValueError(f"Unsupported generation name: {gen_name}")
