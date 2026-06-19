@@ -1,0 +1,105 @@
+## Objective
+
+Extract **all** medical entities from the input text and classify each into one of the entity groups below.
+
+## Extraction Rules
+
+1. Strictly biomedical: Only extract entities with inherent **biomedical or clinical meaning**. A term qualifies only if its meaning is intrinsically medical — not merely because it appears in a clinical document.
+2. Favor recall: Within the biomedical scope, if a term plausibly fits a group and is explicitly present, extract it.
+3. Extract verbatim: Only extract text spans that appear exactly in the input. Do not infer, summarize, rephrase, or generate entities that are not explicitly present.
+4. Longest span: Prefer the longest meaningful span (e.g., "acute myocardial infarction" over "infarction").
+5. Preserve surface form: Keep exact case, punctuation, and spacing.
+6. Include abbreviations: Extract medical abbreviations and acronyms (e.g., MI, COPD, MRI, CT).
+7. Extract once: If an entity appears multiple times, include it only once per group.
+8. One category per entity: Assign each entity to exactly one group.
+
+## Extraction Order
+
+- Process entity groups in this order: disease, drug, body_part, medical_procedure, molecular_marker, clinical_device, vital_function, living_beings.
+- For each group, scan the text from beginning to end and output spans in the same order they appear.
+- Omit any entity group with no matches.
+
+## Exclusions
+
+Do NOT extract:
+- Ages, dates, durations: "63 years old", "2 weeks", "post-op day 3"
+- Numeric values alone: "150 mL", "40%", "500 mg" (but "metformin 500mg" is valid)
+- Person references: patient, doctor, child, mother, elderly, man, woman
+- Facilities and locations: hospital, clinic, ICU, emergency room
+- Administrative terms: referral, consultation, admission, discharge
+
+## Entity Groups
+
+<entity_groups>
+disease
+Definition: Pathological conditions, abnormal clinical states, and deviations from normal health.
+Includes: Disease, syndrome, infection, cancer, congenital abnormality, injury, poisoning, sign, symptom, clinical finding, mental disorder (diagnosed condition).
+Key test: Is this a pathological state that could appear as a diagnosis, problem, or finding in a medical record?
+NOT included: Personality traits or normal psychological states (e.g., perfectionism, anger), medical specialties (e.g., psychiatry, cardiology), healthcare settings (e.g., ICU, emergency room).
+
+drug
+Definition: Chemical substances with molecular identity administered for therapeutic, prophylactic, or diagnostic purposes.
+Includes: Prescription medication, over-the-counter drug, vaccine, therapeutic compound, drug class, contrast agent, pharmacologically active substance.
+Key test: Is this a chemical substance that could be prescribed or administered to produce a biological effect?
+NOT included: Medical devices (orthoses, implants), medical procedures, or body structures.
+
+body_part
+Definition: Named anatomical structures that exist materially within living organisms.
+Includes: Organ, tissue, bone, muscle, blood vessel, nerve, cell, cell component, body fluid, anatomical region, body system.
+Key test: Is this a named physical structure that can be anatomically located within a living organism?
+NOT included: Clinical findings or auscultation results (e.g., breath sounds, heart murmurs), healthcare facilities or settings (e.g., ICU, operating room), time periods.
+
+medical_procedure
+Definition: Clinical, diagnostic, therapeutic, or laboratory actions with established methodology.
+Includes: Surgery, diagnostic test, medical examination, therapeutic procedure, laboratory test, imaging procedure, clinical intervention.
+Key test: Does this action have a specific methodology that would warrant a procedure code or medical order?
+Boundary: Test names (CBC, MRI, lipid panel) → medical_procedure; Parameter names (heart rate, blood pressure) → vital_function.
+
+molecular_marker
+Definition: Genetic and molecular entities with defined sequence or molecular identity, including measurable biochemical substances.
+Includes: Gene, protein, enzyme, receptor, antibody, nucleic acid sequence, genetic variant, mutation, biochemical analyte (e.g., cortisol, troponin, creatinine, hemoglobin, glucose).
+Key test: Is this a specific molecular entity or biochemical substance that can be measured, sequenced, or has defined molecular structure?
+Boundary: Substance names (cortisol, troponin) → molecular_marker; Parameter names (heart rate, blood pressure) → vital_function.
+
+clinical_device
+Definition: Manufactured physical objects designed for medical purposes.
+Includes: Surgical tool, implant, prosthetic, diagnostic scanner, monitoring equipment, drug delivery device, medical instrument.
+Key test: Is this a physical manufactured object used in patient care, diagnosis, or treatment?
+
+vital_function
+Definition: Physiological parameter names representing measurable body functions used for clinical assessment.
+Includes: Heart rate, blood pressure, respiratory rate, temperature, oxygen saturation, cardiac output, consciousness level, reflex response.
+Key test: Is this a physiological parameter name (not a substance) that describes a measurable body function?
+Boundary: Parameter names (heart rate, blood pressure) → vital_function; Substance names (cortisol, glucose) → molecular_marker; Test names (CBC, ECG) → medical_procedure.
+NOT included: Age, weight, height (demographic data, not physiological functions).
+
+living_beings
+Definition: Non-human organisms relevant to biomedical context (pathogenic, commensal, or experimental).
+Includes: Bacterium, virus, fungus, parasite, prion, microbe, pathogen, infectious agent, model organism (e.g., mouse, rat).
+Key test: Is this a named non-human organism or infectious agent relevant to disease or biomedical research?
+NOT included: Any human reference regardless of role, age, or life stage (patient, doctor, nurse, infant, newborn, child, adult, mother, father, man, woman, person, subject, participant) — humans are NEVER living_beings.
+</entity_groups>
+
+## Output Format
+
+Return ONLY a JSON object. No explanations. No markdown code blocks.
+
+{
+   "entities": [
+      {
+         "entity": "<disease|drug|body_part|medical_procedure|molecular_marker|clinical_device|vital_function|living_beings>",
+         "text": ["<exact span 1>", "<exact span 2>", ...]
+      }
+   ]
+}
+
+Only include entity groups that have at least one match. Omit empty groups.
+
+## Quality Control
+
+Before finalizing output, verify:
+- All eligible entities are extracted and correctly categorized.
+- Entity spans are exact and reflect the original text.
+- No entity overlaps or duplications exist.
+- Output JSON is valid with all required fields.
+- Empty groups are omitted.

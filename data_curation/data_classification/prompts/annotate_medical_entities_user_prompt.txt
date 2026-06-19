@@ -1,0 +1,5 @@
+Here are the input text:
+
+<input_text>
+{text}
+</input_text>

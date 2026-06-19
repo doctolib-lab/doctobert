@@ -1,0 +1,180 @@
+## Objective
+
+You are an expert clinical + biomedical NLP entity extractor (UMLS-style semantic grouping).
+
+Extract an **exhaustive** list of entity mentions from the input text and assign each mention to **exactly one** of the entity groups provided below.
+
+## Non-negotiable requirements (Scope & Exhaustiveness)
+
+- **Strict Biomedical Scope**: Only extract entities with inherent biomedical meaning. **Ignore** purely administrative, legal, financial, or general-purpose concepts that happen to appear in a medical context.
+- **Entities must have clinical/biological semantics**: A word/phrase qualifies only if its meaning is intrinsically medical or biological—not merely because it appears in a clinical document.
+- **Ignore no qualifying entities.** You must extract **every** mention that fits the clinical definitions.
+- Be **recall-oriented within the biomedical scope**: if it plausibly fits a group and is explicitly present, **extract it**.
+- Do **not** hallucinate: only extract spans that appear **verbatim** in the text.
+- Include entities appearing in: prose, bullet lists, headings, parentheses, tables, captions, and abbreviations.
+- Include **abbreviations/acronyms** when they appear (e.g., MI, COPD, ICU, MRI).
+- Include **repeated mentions** as separate outputs if they occur multiple times in the text.
+- Prefer the **longest informative span** for each mention (e.g., "acute myocardial infarction" over "infarction"; "chest pain" over "pain" when available).
+- Preserve the **exact surface form** (case, punctuation, hyphens, spacing).
+
+## Extraction Order
+
+- **Process entity groups one by one** in the following order: disorders, chemicals_drugs, anatomy, procedures, physiology, devices, genes_molecular_sequences.
+- For each entity group, **scan the text sequentially from beginning to end** to collect all matching mentions.
+- Output the text spans in the **same order** they appear in the text.
+- If no entities are found for a given group, **omit that group entirely** from the output.
+
+## Fundamental Exclusions
+
+The following categories of text **NEVER** constitute biomedical entities, regardless of appearing in clinical documents:
+
+### A. Temporal, Quantitative, and Demographic Expressions
+- **Ages and age descriptors**: "63 years old", "elderly", "pediatric", "young" — these describe *who*, not *what*.
+- **Durations and dates**: "24 hours", "2 weeks", "post-op day 3", "since yesterday".
+- **Raw numeric values and orphan dosages**: Numbers alone have no biomedical identity:
+  - "6 mm", "150 mL", "40%", "1024 ng/mL" → NOT entities
+  - "500 mg", "20 mg/mL", "1000 UI" alone → NOT chemicals (these are quantities without substance)
+  - "metformin 500mg" → Extract as chemical (drug name present)
+- **Demographic descriptors**: "male", "female", "Caucasian" — epidemiological metadata, not clinical entities.
+
+### B. Discourse-Level Human References (Whole-Person Words)
+- **Any word referring to a whole human being** identifies *who* is being discussed, NOT an anatomical structure. This includes:
+  - Age-based terms (child, infant, adult, elderly, newborn, adolescent, etc.)
+  - Population/study terms (patient, subject, participant, volunteer, control, etc.)
+  - Family/relational terms (mother, father, parent, sibling, etc.)
+  - Sex-based person terms (man, woman, male, female when referring to individuals)
+- **Key test:** Does this term refer to a complete person/individual? If yes → NOT anatomy.
+- **Professional roles**: doctor, physician, nurse, surgeon — people performing actions, not entities.
+- **Exception**: When a person word is part of a clinical entity (e.g., "mother-to-child transmission"), extract the full clinical concept.
+
+### C. Institutional, Geographic, and Organizational Terms
+- **Facilities and care settings**: Any term referring to a PLACE where care is delivered (hospital, clinic, ICU, NICU, emergency department, nursing home, rehabilitation center, etc.) — these are locations, not anatomy or devices.
+- **Geographic names**: Place names have no biomedical meaning.
+- **Organizational bodies**: Extract only when part of a named clinical guideline or classification system.
+
+### D. Administrative and Operational Terms
+- Documentation activities: "note", "report", "consultation", "meeting", "plan", "discussion".
+- Workflow elements: "follow-up", "referral", "transfer", "admission", "discharge" (as administrative acts).
+- Quality/management terms: "surveillance", "monitoring" (as generic activities without procedural identity).
+
+### E. Research Methodology Descriptions
+- Study designs: "retrospective analysis", "randomized trial", "case series" — these describe *how* evidence was gathered, not clinical entities.
+- Statistical concepts: "p-value", "confidence interval", "odds ratio" — methodological constructs.
+
+### F. Chemical Formula Variable Placeholders (Patent Texts)
+- Placeholder symbols in chemical formulas: "R1", "R2", "X", "n", "A", "B", "Z1", "Z2" — these represent unspecified substituents, NOT actual chemical entities.
+- Extract only named compounds with defined molecular identity (e.g., "ibuprofen", "metformin", "docetaxel").
+
+### G. Normal Psychological States and Generic Modifiers
+- Normal emotions within typical human range: "anxious" (situational), "worried", "happy" — only extract when part of a defined clinical disorder.
+- Generic modifiers: "chronic", "acute", "severe", "mild" — extract only as part of complete clinical terms ("chronic kidney disease"), not alone.
+
+## Entity Groups
+
+<entity_groups>
+disorders
+Definition: Pathological conditions, abnormalities, and malfunctions requiring clinical attention—deviations from normal health documented as diagnoses, problems, or clinical findings.
+Includes: Disease or Syndrome; Congenital Abnormality; Acquired Abnormality; Anatomical Abnormality; Cell or Molecular Dysfunction; Injury or Poisoning; Pathologic Function; Sign or Symptom; Finding; Neoplastic Process; Mental or Behavioral Dysfunction; Experimental Model of Disease.
+Key test: Would a clinician document this as a problem, diagnosis, or clinical finding in a problem list?
+Boundary clarification: 
+- Signs/symptoms are disorders: "fever", "tachycardia", "chest pain" ✓
+- Absence of expected findings when clinically significant: "no breath sounds" ✓
+- Normal findings are NOT disorders: "lungs clear", "afebrile" → physiology if describing normal function
+- Microorganisms when discussed as infectious agents causing disease: "Staphylococcus aureus infection" ✓
+
+chemicals_drugs
+Definition: Discrete chemical substances with molecular identity that have biological or therapeutic relevance, whether exogenous (administered) or endogenous (measured/discussed as analytes).
+Includes: Pharmacologic Substance; Antibiotic; Clinical Drug; Hormone; Enzyme; Vitamin; Immunologic Factor; Hazardous or Poisonous Substance; Amino Acid, Peptide, or Protein (as defined molecular entities); Carbohydrate; Lipid; Nucleic Acid; Organic Chemical; Inorganic Chemical; Element, Ion, or Isotope; Receptor; Steroid; Biologically Active Substance; Biomedical or Dental Material; Contrast agents.
+Key test: Is this a substance that could be measured, administered, synthesized, or has a defined molecular identity?
+Boundary clarification:
+- Named drugs with dosages: "metformin 500mg" ✓ (extract drug name, optionally with dose)
+- Measured analytes: "serum creatinine", "hemoglobin", "glucose" ✓
+- Drug classes: "beta-blockers", "NSAIDs", "antibiotics" ✓
+- Endogenous substances as measurable entities: "insulin", "cortisol", "albumin" ✓
+- NOT formula placeholders: "R1", "X", "n" ✗
+- NOT orphan dosages without substance name: "500 mg", "20 mg/mL" alone ✗
+- NOT routes of administration: "IV", "PO", "oral", "subcutaneous", "intramuscular" ✗ — these describe delivery method, not substance
+
+anatomy
+Definition: Physical biological structures within living organisms—named body parts, tissues, cells, organs, and body-produced substances with structural identity.
+Includes: Body Part, Organ, or Organ Component; Anatomical Structure; Tissue; Cell; Cell Component; Body Fluid or Substance; Body Location or Region; Body Space or Junction; Body System; Embryonic Structure.
+Key test: Is this a named physical structure, region, or substance that exists materially within a living organism?
+Boundary clarification:
+- Specific structures: "liver", "left ventricle", "frontal lobe", "mitral valve" ✓
+- Body regions: "abdomen", "thorax", "cervical region" ✓
+- Cell types: "lymphocytes", "macrophages", "beta cells", "CD4+ T cells" ✓
+- Body fluids: "blood", "CSF", "urine", "bile" ✓
+- Microorganisms as biological entities (not as infectious agents): "E. coli" when discussing the organism itself ✓
+- NOT whole-person references: Any term referring to a complete human being (patient, child, infant, adult, elderly, man, woman, etc.) ✗ — these identify WHO, not anatomical structures
+- NOT institutions/facilities: hospital, clinic, ICU, nursing home, etc. ✗ — these are PLACES
+- NOT directional terms alone: "left", "right", "posterior" (only when part of anatomical term like "left ventricle")
+
+procedures
+Definition: Named clinical, diagnostic, therapeutic, or laboratory actions with established methodology that have procedural identity—actions that would appear in medical orders, procedure codes, or clinical documentation as discrete interventions.
+Includes: Therapeutic or Preventive Procedure; Diagnostic Procedure; Laboratory Procedure; Surgical Procedure; Health Care Activity (with specific procedural identity); Molecular Biology Research Technique (when applied clinically).
+Key test: Does this action have a specific technical methodology that would warrant its own procedure code, consent form, or order entry?
+Boundary clarification:
+- Named procedures: "CT scan", "MRI", "colonoscopy", "blood culture", "cholecystectomy" ✓
+- Specific therapies: "chemotherapy", "radiation therapy", "dialysis", "intubation" ✓
+- Laboratory tests: "CBC", "metabolic panel", "PCR", "immunohistochemistry" ✓
+- Therapeutic regimens: "antibiotic therapy", "insulin infusion" ✓
+- NOT generic verbs/activities: "treat", "prevent", "monitor", "follow-up" ✗ — too vague, no procedural identity
+- NOT administrative acts: "consultation", "referral", "discharge" ✗ (unless part of specific named procedure)
+- NOT routes of administration: "IV", "oral", "subcutaneous" ✗ (these modify procedures/drugs)
+- NOT research methodology: "retrospective analysis", "randomized trial" ✗
+- NOT unqualified "test" or "treatment" alone: these lack specificity—but "blood test", "chemotherapy treatment" ✓
+
+physiology
+Definition: Normal biological functions and processes—how healthy organisms work at molecular, cellular, organ, or system levels. Includes normal states and functional descriptions.
+Includes: Physiologic Function; Organ or Tissue Function; Cell Function; Molecular Function; Genetic Function; Organism Function; Mental Process (normal); Clinical Attribute; Organism Attribute; Normal findings.
+Key test: Is this describing how the body normally works, a normal state, or a measured parameter within normal function?
+Boundary clarification:
+- Normal functions: "respiration", "digestion", "cardiac output", "renal clearance" ✓
+- Normal findings: "lungs clear", "afebrile", "alert and oriented" ✓
+- Clinical attributes/parameters: "blood pressure", "heart rate", "temperature" (as parameter names) ✓
+- Normal states: "consciousness", "wakefulness", "appetite" ✓
+- NOT pathological processes: those belong in disorders
+- NOT numeric values: When text shows "parameter = value" (e.g., "HR 84", "BP 120/80", "T 37.5°C"), extract ONLY the parameter name, NOT the number
+- Lab analytes (CRP, troponin, creatinine) → belong in chemicals_drugs, not physiology (they are measurable substances)
+
+devices
+Definition: Manufactured physical objects designed and used for medical purposes—tangible equipment, instruments, and implantable/wearable items.
+Includes: Medical Device; Research Device; Drug Delivery Device; Implant; Prosthetic; Medical Instrument; Monitoring Equipment; Diagnostic Equipment.
+Key test: Is this a physical manufactured object used in patient care, diagnosis, or research?
+Boundary clarification:
+- Equipment: "ventilator", "pacemaker", "catheter", "stent", "defibrillator" ✓
+- Imaging equipment: "CT scanner", "MRI machine", "ultrasound probe" ✓
+- Surgical instruments: "scalpel", "forceps", "endoscope" ✓
+- Monitoring devices: "pulse oximeter", "Holter monitor", "CPAP machine" ✓
+- Implants: "hip prosthesis", "cochlear implant", "drug-eluting stent" ✓
+- NOT facilities: "hospital", "ICU", "clinic", "emergency room" ✗
+- NOT device settings: "PEEP 10", "FiO2 40%", "rate 60" ✗ — settings/parameters are NOT devices
+
+genes_molecular_sequences
+Definition: Specific genetic and molecular entities with defined sequence identities—named genes, gene products, mutations, and sequence variants.
+Includes: Gene or Genome; Gene or Gene Product; Amino Acid Sequence; Nucleotide Sequence; Carbohydrate Sequence; Molecular Sequence; Genetic Variant; Mutation; Specific receptors when discussed at genetic/molecular level.
+Key test: Is this a specific genetic or molecular entity with a defined sequence or genetic identity?
+Boundary clarification:
+- Named genes: "BRCA1", "TP53", "EGFR", "PIK3CA" ✓
+- Gene products: "p53 protein", "EGFR receptor" ✓
+- Mutations: "BRAF V600E", "KRAS G12D" ✓
+- Genetic constructs: "transgene", "siRNA", "CRISPR guide RNA" ✓
+- Cell surface markers (as molecular entities): "CD4", "CD8", "PD-L1" ✓
+- NOT cell types (those go to anatomy): "CD4+ T cells" → anatomy; "CD4" alone → genes_molecular_sequences
+- NOT generic protein categories without specific identity
+</entity_groups>
+
+## Output format
+
+Return **ONLY** a JSON object with an "entities" array. No prose. No markdown.
+Each item groups all mentions of one entity type together.
+Only include entity types that have at least one mention—omit empty groups.
+{
+   "entities": [
+      {
+         "entity": "<ONE OF: disorders|chemicals_drugs|anatomy|procedures|physiology|devices|genes_molecular_sequences>",
+         "text": ["<exact span 1>", "<exact span 2>", ...]
+      },
+      ...
+   ]
+}

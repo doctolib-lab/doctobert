@@ -1,0 +1,16 @@
+Evaluate the following rewritten medical text against the original.
+
+## Original Text
+```
+{original_text}
+```
+
+## Rewritten Text
+```
+{rewriting_text}
+```
+
+## Specified Style
+{rewriting_style}
+
+Evaluate the rewritten text on all three dimensions and provide your assessment in the specified JSON format.

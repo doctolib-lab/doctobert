@@ -1,0 +1,9 @@
+Here are the inputs provided:
+
+<document_url>
+{url}
+</document_url>
+
+<document_content>
+{text}
+</document_content>

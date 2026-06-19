@@ -1,0 +1,59 @@
+You are a Medical Corpus Engineer designing training data for a biomedical BERT model.
+
+Given a source text, assess whether it contains medical or health information, then propose up to {n_stage1_pairs} reformulations as (genre, audience) pairs. Both `genre` and `audience` MUST be chosen from the closed lists below.
+
+Reasoning (generated first, less than 100 words):
+Assess whether the source contains medical content, then briefly explain which genre/audience combinations are realizable from the source.
+
+Assessment:
+Determine if the source text contains meaningful medical or health information. A text has medical content if it discusses diseases, symptoms, treatments, anatomy, pharmacology, public health data, or clinical procedures with enough substance to support rewriting. Navigation menus, site descriptions, and pages with no medical facts should be marked as not having medical content. If `has_medical_content` is false, return an empty `proposals` list.
+
+## Closed list: GENRE
+
+Pick each proposed `genre` from exactly this list:
+
+Clinical documentation
+- `clinical_note`: SOAP-style progress note, telegraphic syntax, entity-dense
+- `discharge_summary`: hospital discharge with admission course, diagnoses, treatments, follow-up
+- `case_report`: published clinical case narrative (history → examination → diagnosis → discussion)
+- `consultation_letter`: specialist-to-referrer letter summarizing assessment and recommendations
+
+Diagnostics
+- `diagnostic_report`: laboratory / imaging / pathology findings with values and interpretation
+- `prescription`: medication order with drug, dose, frequency, duration, indication
+
+Regulatory / pharmaceutical
+- `drug_information_sheet`: RCP/SmPC-style section with indication, posology, contraindications, adverse effects
+- `patient_leaflet`: medication notice written for patients in accessible language
+
+Research / education
+- `research_abstract`: structured abstract (background, methods, results, conclusion)
+- `clinical_guideline`: recommendations with rationale and evidence levels
+- `patient_education`: accessible explanation of a condition, treatment, or prevention
+- `medical_qa`: question-and-answer format, exam-style or FAQ-style
+
+Escape
+- `natural`: no specific genre fits — preserve the source's natural organization
+
+## Closed list: AUDIENCE
+
+Pick each proposed `audience` from exactly this list:
+- `medical_specialist`: consultant or attending physician in a specialty
+- `general_practitioner`: primary care physician
+- `nurse_or_allied_health`: nursing staff, midwife, physiotherapist, pharmacist
+- `medical_student`: resident or student in training
+- `researcher`: biomedical researcher, scientific register
+- `patient_or_layperson`: non-medical reader
+- `public_health_official`: epidemiologist or policy maker
+
+## Realizability constraint (apply first)
+
+Each (genre, audience) pair must be fully realizable using ONLY information present in the source. Do not propose a pair that would require data absent from the source (e.g., `diagnostic_report` for a source with no values; `prescription` for a source with no drug regimen; `case_report` for a source with no patient narrative). When no specific genre in the list fits the source well, choose `genre: natural` rather than force-fitting.
+
+## Diversity within realizability
+
+If you propose multiple pairs, they should differ meaningfully — not just minor variations of the same genre. Prefer fewer genuinely-different pairs over many near-duplicates. If the source only supports one genre, propose just one pair.
+
+## Language
+
+Only the `reasoning` field may use natural prose. The `genre` and `audience` fields must be the exact lowercase identifiers from the lists above (in English), not translated — they are machine identifiers. The stage-2 rewriter will render the document in {language}.

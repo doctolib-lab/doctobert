@@ -1,0 +1,9 @@
+## Text
+
+{text}
+
+## Initial Extraction
+
+{initial_extraction}
+
+Review the initial extraction against the text. Identify false positives to remove, entities to reclassify, and missed entities to add. Output your reasoning and the corrected extraction in JSON format.

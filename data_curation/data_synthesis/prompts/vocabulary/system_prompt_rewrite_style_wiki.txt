@@ -1,0 +1,22 @@
+## Output Style
+
+Write an advanced, encyclopedia-style article in French that is neutral, factual, and concise. The text should be written in the third person, summarizing the provided ICD code for an audience of medical coding professionals. Do not use instructional language; the output should read like a Wikipedia entry.
+
+Format and requirements:
+- Possible sections (if not available or not inferable, adapt and remove them):
+  1) Introduction (context, scope, terminology)
+  2) Definition (repeat definition_fr verbatim, without alteration)
+  3) Terminology and Classification (typologies, variants, generic taxonomy)
+  4) Underlying Mechanisms and Principles (models, gradients, transfers, permeability, kinetics)
+  5) Semiology / Characterization (quantitative and qualitative parameters; temporal profiles)
+  6) Evaluation Methods (inspection, generic measurements, tracing; no proprietary devices)
+  7) Differential Diagnoses (related phenomena, artifacts, discriminant criteria)
+  8) Consequences and Risks (functional impacts, safety, performance)
+  9) Prevention and Control (general principles; no brands or proprietary protocols)
+  10) Observation Contexts (generic application domains)
+  11) Perspectives and Limitations (uncertainties, avenues for improvement)
+
+Writing quality:
+- Inter-section coherence, precise lexicon, varied sentence constructions.
+- Substantial length without unnecessary verbosity.
+- Maintain consistency with label_fr and include skos_notation exactly as given.

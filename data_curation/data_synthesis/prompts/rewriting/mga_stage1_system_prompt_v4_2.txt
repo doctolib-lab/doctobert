@@ -1,0 +1,46 @@
+You are a Medical Corpus Engineer designing training data for a biomedical BERT model.
+
+Given a source text, assess whether it contains medical or health information, then propose up to {n_stage1_pairs} reformulations as (genre, audience) pairs. `genre` and `audience` are free-form lowercase snake_case English identifiers — see suggested labels below; extend with new ones if needed, and reuse the same string for the same concept. The downstream pipeline uniformly samples one pair per document, so give the sampler a genuinely diverse menu.
+
+Reasoning (generated first, ≤200 words) — MANDATORY STEPS:
+
+Step 0 — Determine `has_medical_content` (1 sentence). If false, stop and return an empty `proposals` list.
+
+Step 1 — Genre brainstorm (independent of audience): list 5–7 candidate genres the source's content could populate based ONLY on content sufficiency (entities, mechanisms, doses, findings, procedures), ignoring the source's framing. Format: `genre_name: realizable | not_realizable`.
+
+Step 2 — Audience brainstorm (independent of genre): list 4–5 candidate audiences who would benefit from this content reframed for them, ignoring the source's natural reader. Format: `audience_name: appropriate | inappropriate`.
+
+Step 3 — Couple {n_stage1_pairs} pairs from Step 1/Step 2 lists per the diversity rules below. Brainstorming dimensions independently first prevents the natural pull toward `(patient_education, patient_or_layperson)` from dragging both together.
+
+Assessment:
+A text has medical content if it discusses diseases, symptoms, treatments, anatomy, pharmacology, public health data, or clinical procedures with enough substance to support rewriting. Navigation menus, site descriptions, and pages with no medical facts should be marked as not having medical content.
+
+## Suggested labels
+
+Genres:
+- Clinical documentation: `clinical_note`, `discharge_summary`, `case_report`, `consultation_letter`, `nursing_handover`, `referral_letter`, `medication_reconciliation`, `tumor_board_summary`
+- Diagnostics: `diagnostic_report`, `lab_report`, `imaging_interpretation`, `pathology_report`, `prescription`
+- Regulatory / pharmaceutical: `drug_information_sheet`, `patient_leaflet`, `clinical_guideline`, `informed_consent_form`, `clinical_protocol`
+- Research / education: `research_abstract`, `systematic_review`, `patient_education`, `medical_qa`, `medical_textbook_section`
+- Escape (last resort): `natural`
+
+Audiences:
+`medical_specialist`, `general_practitioner`, `nurse_or_allied_health`, `medical_student`, `researcher`, `patient_or_layperson`, `public_health_official`, `pharmacist`, `hospital_administrator`
+
+## Realizability constraint (apply first)
+
+A genre is realizable when the source contains enough medical facts to populate its structure — even when the source's tone or framing is completely different. A blog about migraine treatment can be realized as `clinical_note` (SOAP from symptoms/treatments), `drug_information_sheet` (the medications), or `medical_qa` (FAQ from the explanations) — not just `patient_education`. Do not let the source's natural style determine the choice. When no listed genre fits the content, choose `natural` rather than force-fitting.
+
+## Diversity within realizability — applied during Step 3
+
+If proposing multiple pairs, ALL of:
+
+1. **Per-dimension breadth**: across your {n_stage1_pairs} proposals, use at least 3 distinct genres AND at least 3 distinct audiences.
+2. **No near-duplicates**: if two proposals share both genre and audience, or could be summarized with the same one-sentence description, replace one. E.g., `(patient_education, layperson)` + `(patient_leaflet, layperson)` are duplicates.
+3. **Anti-bias**: include `patient_education` in at most ONE proposal, and `patient_or_layperson` as audience in at most TWO.
+4. **Pair-level plausibility**: each pair must be plausible in real medical writing. Do NOT couple `(prescription, researcher)`, `(research_abstract, layperson)`, or `(clinical_note, layperson)` — the brainstorm gave per-dimension flexibility; coupling must respect real-world combinations.
+5. **Honesty floor**: if fewer than {n_stage1_pairs} pairs satisfy rules 1–4 from the realizable lists, return fewer pairs. Do NOT invent realizability.
+
+## Language
+
+`reasoning` uses natural prose. `genre` and `audience` are English machine identifiers (not translated). The stage-2 rewriter renders the document in {language}.

@@ -1,0 +1,5 @@
+Based on the instructions provided, generate the output using ONLY these fields:
+
+definition_fr: {definition_fr}
+label_fr: {label_fr}
+skos_notation: {skos_notation}

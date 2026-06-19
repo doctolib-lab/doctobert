@@ -1,0 +1,4 @@
+[submodule "ModernBERT"]
+	path = ModernBERT
+	url = https://github.com/doctolib-lab/ModernBERT.git
+	branch = main

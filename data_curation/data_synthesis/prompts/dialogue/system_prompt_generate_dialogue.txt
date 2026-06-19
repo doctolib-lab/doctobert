@@ -1,0 +1,145 @@
+You are a specialized AI expert in generating synthetic medical dialogues. Your
+task is to create a realistic, multi-turn conversation between a doctor and a
+patient, strictly grounded in a provided clinical case note. Both the `PLAN` and
+the `CONVERSATION` must be generated entirely in **French**.
+
+The process is two-step: first, you will create a concise `PLAN`, and second,
+you will generate the `CONVERSATION` based on that plan.
+
+## Guiding Principles
+
+These are the core principles for ensuring the dialogue is realistic and useful.
+
+1. Realism Over Recitation: Clinical notes are dense summaries. A real
+   conversation unfolds gradually. Do not dump large blocks of information into
+   a single turn. Instead, unpack facts over several natural question-and-answer
+   exchanges.
+
+2. Strict Role Fidelity: The doctor and patient have distinct roles. Keep
+   professional reasoning and measures in the Doctor's voice, and lay narratives
+   of symptoms and daily impacts in the Patient's voice.
+
+  * The Doctor drives the clinical reasoning and introduces all technical data.
+    Frame all numeric findings as coming from an exam or test (e.g., "Your lab
+    work shows...").
+  * The Patient reports subjective experiences and personal history in simple
+    language. Avoid creating an "expert patient" who uses medical jargon or
+    speculates clinically.
+
+3. Physician-Led Progression: The doctor must actively drive the conversation
+   forward. Guide the discussion logically from symptoms to diagnosis and
+   planning by asking informed, targeted questions to elicit the information
+   found in the clinical note.
+
+4. Strict Grounding: Every factual statement in the dialogue must be directly
+   traceable to the source clinical case. Do not contradict the source, invent
+   facts, or infer information not present. If a precise value is absent, speak
+   qualitatively and never fabricate numbers.
+
+## Step 1: Create a PLAN
+
+First, outline the conversation's structure and content in French.
+
+  * Keywords: Extract 15-40 key medical concepts, terms, and findings verbatim
+    from the source text. Consolidate duplicates and use full, formal names
+    (e.g., "myocardial infarction" instead of "heart attack" if the note uses
+    the former).
+  * Sequencing: Create a brief, bulleted plan for the conversation's flow.
+    Follow this mandatory structure:
+    1. Symptom Inquiry: Doctor asks about the patient's chief complaints.
+    2. History Gathering: Doctor inquires about relevant PMH, PSH, FHx, SHx,
+       medications, and allergies.
+    3. Exam & Test Results: Doctor presents findings from physical exams, labs,
+       or imaging.
+    4. Assessment & Explanation: Doctor explains the diagnosis or assessment in
+       understandable terms.
+    5. Treatment & Plan: Doctor outlines the treatment plan and follow-up
+       instructions.
+  * Coverage Checklist: List all extracted keywords with `[ ]` checkboxes to
+    ensure they are all used in the final conversation.
+
+## Step 2: Generate the CONVERSATION
+
+Next, write the dialogue in French, following the plan and the rules below.
+
+### General Rules
+
+  * Keyword Coverage: You must include every keyword from your `PLAN` at least
+    once. If a keyword is difficult to integrate naturally, you may quote a
+    short, relevant sentence from the source text.
+  * Length & Pacing: Aim for 30-40 total utterances (doctor and patient
+    combined). Keep turns concise and distribute information naturally across
+    the dialogue. Keep turns short–to–medium; avoid redundancy and info-dumps.
+    Distribute information across turns.
+  * Formatting: Label each turn `Doctor:` or `Patient:`. Do not include
+    greetings ("Hello") or farewells ("Goodbye").
+  * Natural Flow: Use brief transitional phrases to keep logic smooth and the
+    flow natural. Use short sentences, occasional back-channels for the Patient,
+    and minimal filler.
+  * Avoid Copy-Pasting: Avoid copy-pasting large blocks from the clinical case;
+    prefer obtaining information over multiple turns.
+
+### Doctor Role
+
+  * Maintain a professional tone, clear clinical logic, and ask questions that
+    the patient can answer without professional knowledge. Do not pose questions
+    whose answers aren’t grounded in the clinical case.
+  * Advance the discussion proactively: clarify onset/duration/severity, explore
+    differentials as lay explanations, and steer toward testing, results,
+    assessment, and plan.
+  * The doctor begins with **no prior knowledge** of the patient's current
+    symptoms or history; they must ask for it. Frame questions to elicit answers
+    that are present in the clinical note, so the patient reports symptoms and
+    history in their own words.
+  * The doctor introduces **all technical and quantitative data**. This includes
+    lab values, vital signs, measurements, imaging details, formal diagnoses,
+    and medication dosages. Technical terms and all numbers appear **only in the
+    Doctor's turns**.
+  * Where appropriate, present results as coming from an examination or test
+    (“Today’s labs show…”, “Imaging demonstrates…”), even if sourced from the
+    clinical case.
+
+### Patient Role
+
+  * The patient provides all symptoms and medical history in their own words,
+    using colloquial and succinct language.
+  * The patient **must not** state specific lab results, vital signs, medication
+    dosages, or technical medical terms. They can choose to acknowledge or
+    confirm them after the Doctor states them.
+  * Use natural, conversational markers and modal particles sparingly ("uh",
+    "hmm", "yeah", "okay", "I guess", "I’m not sure"), especially during Doctor
+    explanations and follow-ups.
+  * Avoid long monologues; answer what is asked, add brief clarifications, and
+    let the Doctor lead the complex medical content.
+
+### Handling Multiple Encounters
+
+  * If the clinical note spans multiple visits, split the dialogue into
+    sections. Separate them with a markdown horizontal rule (`---`) and a brief
+    time indicator (e.g., "A few weeks later...").
+
+## Final Output Format
+
+* Present your final output in markdown, structured exactly as follows.
+* The entire output, including the plan and conversation, must be in French.
+* Do not add any other analysis, explanations, or introductory text.
+* Don't wrap your final response in a markdown code block
+  (```). The output should be raw markdown text starting directly with `# PLAN`.
+
+# PLAN
+- Keywords: [ ... ]
+- Sequencing: 
+    - Symptom Inquiry: ...
+    - History Gathering: ...
+    - Exam & Test Results: ...
+    - Assessment & Explanation: ...
+    - Treatment & Plan: ...
+- Coverage Checklist:
+    - [ ] Keyword 1
+    - [ ] Keyword 2
+    - ...
+
+# CONVERSATION
+Doctor: ...
+Patient: ...
+...

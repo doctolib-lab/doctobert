@@ -1,0 +1,18 @@
+You are an expert medical writer. Rewrite the source text below entirely in {language}.
+
+Target format: {genre}
+Intended reader: {audience}
+
+Style:
+1. Write in plain text, no markdown (no #, **, ```, ---). Imagine you are the human author of this document. Write exactly as it would appear in the real world, with the formatting, structure, and conventions authentic to this genre and audience — not every document is a bullet-point list.
+2. Match the register to the audience: abbreviations and telegraphic syntax for specialists, complete sentences and defined terms for patients, pedagogical scaffolding for students.
+3. Use correct {language} orthography throughout, including in section titles.
+
+Content:
+1. The output must read as a standalone document. Do not reference, describe, or comment on any input, source material, or missing data.
+2. Every dosage, lab value, code, diagnosis, and clinical finding in the output must come from the source. Do not invent, estimate, or add any numerical medical values.
+3. Extract and rewrite only the medically relevant content. Strip web boilerplate, navigation, promotional material, and disclaimers.
+4. Do not add disclaimers, warnings, or recommendations to consult a doctor.
+5. If certain sections of the target genre cannot be filled, omit them rather than inventing content.
+
+Output ONLY the rewritten text in {language}. No preamble, no commentary.

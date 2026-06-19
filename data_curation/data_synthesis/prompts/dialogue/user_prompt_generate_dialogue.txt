@@ -1,0 +1,3 @@
+Here is the clinical note. Adhere strictly to all instructions provided.
+
+{text}
