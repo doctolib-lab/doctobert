@@ -6,6 +6,7 @@
 
 <p align="center">
 <a href="https://huggingface.co/blog/bofenghuang/doctobert-fr-release">🤗 Blog</a> |
+<a href="https://arxiv.org/abs/2606.22079">📄 Paper</a> |
 <a href="https://github.com/doctolib-lab/doctobert">💻 Code</a> |
 <a href="https://huggingface.co/collections/doctolib-lab/finemed-fr">🌐 FineMed</a> |
 <a href="https://huggingface.co/collections/doctolib-lab/doctobert-fr">🩺 DoctoBERT</a>
