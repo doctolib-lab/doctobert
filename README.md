@@ -12,16 +12,6 @@
 <a href="https://huggingface.co/collections/doctolib-lab/doctobert-fr">🩺 DoctoBERT</a>
 </p>
 
-<!-- Banner with Technical Report (restore once the arXiv ID is available):
-<p align="center">
-<a href="https://huggingface.co/blog/bofenghuang/doctobert-fr-release">🤗 Blog</a> |
-<a href="https://arxiv.org/abs/2606.XXXXX">📄 Technical Report</a> |
-<a href="https://github.com/doctolib-lab/doctobert">💻 Code</a> |
-<a href="https://huggingface.co/collections/doctolib-lab/finemed-fr">🌐 FineMed</a> |
-<a href="https://huggingface.co/collections/doctolib-lab/doctobert-fr">🩺 DoctoBERT</a>
-</p>
--->
-
 *DoctoBERT* is a family of medical encoders, pretrained from scratch on medical text curated from the open web, which provides the scale, source, and stylistic diversity that hand-curated corpora lack.
 
 This repository holds the **reproducible data-curation pipeline**, which combines two complementary levers: **multi-axis annotation** that scores each document along three axes (subdomain, educational quality, and medical-term density) to select the documents most valuable for pretraining, and **signal-amplifying rephrasing** that uses an LLM to rewrite documents into denser variants with broader entity contexts to improve their training utility. Model pretraining builds on the [ModernBERT](https://github.com/AnswerDotAI/ModernBERT) codebase, included here as the `ModernBERT/` submodule.
