@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use DoctoBERT, please cite the paper below."
+title: "DoctoBERT"
+authors:
+  - {family-names: "Huang", given-names: "Bofeng"}
+  - {family-names: "Sun", given-names: "Jacques"}
+  - {family-names: "Bouchacourt", given-names: "Diane"}
+  - {family-names: "Barascud", given-names: "Nicolas"}
+  - {family-names: "Fogel", given-names: "Fajwel"}
+repository-code: "https://github.com/doctolib-lab/doctobert"
+license: Apache-2.0
+preferred-citation:
+  type: article
+  title: "Where Does the Signal Live? A Web Data Recipe for Medical Encoder Pretraining"
+  authors:
+    - {family-names: "Huang", given-names: "Bofeng"}
+    - {family-names: "Sun", given-names: "Jacques"}
+    - {family-names: "Bouchacourt", given-names: "Diane"}
+    - {family-names: "Barascud", given-names: "Nicolas"}
+    - {family-names: "Fogel", given-names: "Fajwel"}
+  year: 2026
+  url: "https://arxiv.org/abs/2606.22079"
+  identifiers:
+    - {type: other, value: "arXiv:2606.22079", description: "arXiv preprint"}
